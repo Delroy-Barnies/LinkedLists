@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+
+        class Node {
+            constructor(value = null, nextNode = null) {
+                this.value = value;
+                this.nextNode = nextNode;
+            }
+        }
+
+        class LinkedList {
+            constructor() {
+                this.head = null;
+                this.width = 0;
+            }
+
+            append(value) {
+                this.width += 1;
+
+                let node = this.head;
+                if (node === null) {
+                    this.head = new Node(value);
+                    return;
+                } else {
+                    const addNode = function (node) {
+                        if (node.nextNode === null) {
+                            node.nextNode = new Node(value);
+                            return;
+                        } else if (node.nextNode !== null) {
+                            return addNode(node.nextNode);
+                        } else {
+                            return null;
+                        }
+                    }
+                    return addNode(node);
+                }
+            }
+
+            prepend(value) {
+                this.width += 1;
+
+                let node = new Node(value);
+                node.nextNode = this.head;
+                this.head = node;
+            }
+
+            root() {
+                return new Node(this.head.value, this.head.nextNode.value);
+            }
+
+            size() {
+                return this.width;
+            }
+
+            tail() {
+                let node = this.head;
+                const findTail = function (node) {
+                    if (node.nextNode !== null) {
+                        return findTail(node.nextNode);
+                    } else {
+                        return node;
+                    }
+                }
+                return findTail(node);
+            }
+
+            atIndex(index) {
+                if (index > this.width) {
+                    return "No Element At This Index!";
+                }
+                if (index < 0) {
+                    return "No Element At This Index!";
+                }
+
+                let node = this.head;
+                const findNodeAtIndex = function (node) {
+                    while (index > 0) {
+                        index--;
+                        return findNodeAtIndex(node.nextNode);
+                    }
+                    return node;
+                }
+                return findNodeAtIndex(node);
+            }
+
+            pop() {
+                let node = this.atIndex(this.width - 2);
+                let lastNode = this.atIndex(this.width - 1);
+                node.nextNode = null;
+                this.width--;
+                return lastNode;
+            }
+
+            contains(value) {
+                let node = this.head;
+                const isHere = function (node) {
+                    if (node.nextNode === null) {
+                        return false;
+                    } else if (node.value !== value) {
+                        return isHere(node.nextNode);
+                    } else {
+                        return true;
+                    }
+                }
+                return isHere(node);
+            }
+
+            find(value) {
+                if (this.contains(value) === false) {
+                    return "No Element With This Value!!";
+                }
+
+                let node = this.head;
+                let index = 0;
+
+                const getIndex = function (node) {
+                    if (node.value !== value) {
+                        index++;
+                        return getIndex(node.nextNode);
+                    } else {
+                        return index;
+                    }
+                }
+                return getIndex(node);
+            }
+
+            toString() {
+                let node = this.head;
+                let string = ``;
+                const assemble = function (node) {
+                    if (node.nextNode !== null) {
+                        string += `(${node.value}) -> `;
+                        return assemble(node.nextNode);
+                    } else {
+                        string += `null`;
+                        return string;
+                    }
+                }
+                return assemble(node);
+            }
+        }
+
+        const linkedList = new LinkedList();
+
+        linkedList.append(47);
+        linkedList.append(21);
+        linkedList.append(18);
+        linkedList.append(27);
+        linkedList.append(76);
+        linkedList.append(52);
+        linkedList.append(82);
+        linkedList.prepend(12);
+
+        console.log(linkedList);
+        console.log(linkedList.find(76));
+        console.log(linkedList.toString());
+    </script>
+</body>
+
+</html>
