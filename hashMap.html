@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        class HashMap {
+            constructor(size = 16) {
+                this.size = size;
+                this.capacity = 0;
+                this.loadFactor = (75 * this.size) / 100;
+                this.table = new Array(size);
+                this.length = 0;
+            }
+
+            _hash(key) {
+                let hash = 0;
+                for (let i = 0; i < key.length; i++) {
+                    hash = (hash + key.charCodeAt(i) * 23) % this.table.length;
+                }
+                return hash;
+            }
+
+            _isDuplicate(key, hashTable) {
+                let isDuplicate = false;
+                hashTable.forEach(element => {
+                    if (element[0] === key) isDuplicate = true;
+                });
+                return isDuplicate;
+            }
+
+            _resize() {
+
+                let origTable = this.table;
+                let i = origTable.length;
+                let newTableSize = i * 2;
+                let newTable = new Array(newTableSize);
+
+                while (i--) newTable[i] = origTable[i];
+                this.size = newTableSize;
+                this.loadFactor = (75 * this.size) / 100;
+                this.table = newTable;
+
+            }
+
+            set(key, value) {
+                this.length++;
+                let keyCode = this._hash(key);
+                let hashTable = this.table;
+
+                if (!hashTable[keyCode]) hashTable[keyCode] = [];
+                if (!this._isDuplicate(key, hashTable[keyCode])) {
+                    this.capacity++;
+                    if (this.capacity > this.loadFactor) this._resize();
+                    hashTable[keyCode].push([key, value]);
+                }
+            }
+
+            get(key) {
+                let keyCode = this._hash(key);
+                let hashTable = this.table;
+                let value = null;
+
+                if (!hashTable[keyCode]) {
+                    return value;
+                } else {
+                    hashTable[keyCode].forEach(element => {
+                        if (element[0] === key) {
+                            value = element[1];
+                        }
+                    });
+                }
+                return value;
+            }
+
+            has(key) {
+                let keyCode = this._hash(key);
+                let hashTable = this.table;
+
+                if (!hashTable[keyCode]) return false;
+                else return true;
+            }
+
+            remove(key) {
+                this.length--;
+                let keyCode = this._hash(key);
+                let hashTable = this.table;
+                let isRemoved = false;
+
+                if (!hashTable[keyCode]) {
+                    return false;
+                } else {
+                    for (let i = 0; i < hashTable[keyCode].length; i++) {
+                        if (hashTable[keyCode][i][0] === key) {
+                            hashTable[keyCode].splice(i, 1);
+                            isRemoved = true;
+                        }
+                    }
+                }
+                return isRemoved;
+            }
+
+            clear() {
+                this.length = 0;
+                this.table = new HashMap();
+            }
+
+            keys() {
+                let hashTable = this.table;
+                let keys = [];
+
+                for (let i = 0; i < hashTable.length; i++) {
+                    if (hashTable[i]) {
+                        hashTable[i].forEach(element => {
+                            keys.push(element[0]);
+                        });
+                    }
+                }
+                return keys;
+            }
+
+            values() {
+                let hashTable = this.table;
+                let values = [];
+
+                for (let i = 0; i < hashTable.length; i++) {
+                    if (hashTable[i]) {
+                        hashTable[i].forEach(element => {
+                            values.push(element[1]);
+                        });
+                    }
+                }
+                return values;
+            }
+
+            entries() {
+                let hashTable = this.table;
+                let entries = [];
+
+                for (let i = 0; i < hashTable.length; i++) {
+                    if (hashTable[i]) {
+                        hashTable[i].forEach(element => {
+                            entries.push(element);
+                        });
+                    }
+                }
+                return entries;
+            }
+
+        }
+
+        let hashTable = new HashMap();
+
+        hashTable.set("greet", "why hello there!");
+        hashTable.set("brusheeTeeth", "Im brushing");
+        hashTable.set("washCqloths", "wash wash wash");
+
+        console.log(hashTable.table);
+
+    </script>
+</body>
+
+</html>
