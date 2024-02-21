@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knights Travails</title>
+</head>
+
+<body>
+    <script>
+        class Node {
+            constructor(data, path = null) {
+                this.data = data;
+                this.path = path;
+            }
+        }
+
+        function knightMoves(s, e) {
+            let eNode = bfs(s, e);
+            return getPath(eNode);
+        }
+
+        function bfs(s, e) {
+            let possibleMoves = [[-3, -1],
+            [-1, -2],
+            [1, -2],
+            [2, -1],
+            [2, 1],
+            [1, 2],
+            [-1, 2],
+            [-2, 1],
+            ];
+
+            let array = [0, 1, 2, 3, 4, 5, 6, 7];
+            let gridArr = [];
+            let grid = {};
+            for (let i = 0; i < array.length; i++) {
+                for (let j = 0; j < array.length; j++) {
+                    gridArr.push([i, j]);
+                }
+            }
+            grid = Object.assign({}, gridArr);
+            grid = swap(grid);
+
+            let sNode = new Node();
+            let eNode = null;
+            sNode.data = s;
+            let visited = [];
+
+            for (let i = 0; i < 64; i++) {
+                visited.push(false);
+            }
+
+            let visitedIndex = grid[`${s[0]},${s[1]}`];
+            visited[visitedIndex] = true;
+            let queue = [sNode];
+
+            while (queue.length) {
+                let node = queue.shift();
+                let children = [];
+                for (let i = 0; i < possibleMoves.length; i++) {
+                    let nextMoveX = node.data[0] + possibleMoves[i][0];
+                    let nextMoveY = node.data[1] + possibleMoves[i][1];
+
+                    if (nextMoveX < 0 || nextMoveX > 7 || nextMoveY < 0 || nextMoveY > 7) {
+                        continue;
+                    }
+                    let nextMoveIndex = grid[`${nextMoveX},${nextMoveY}`];
+                    if (!visited[nextMoveIndex]) {
+                        visited[nextMoveIndex] = true;
+                        let child = new Node();
+                        child.data = [nextMoveX, nextMoveY];
+                        child.path = node;
+                        queue.push(child);
+                    }
+                }
+                if (node.data[0] === e[0] && node.data[1] === e[1]) {
+                    queue.length = 0;
+                    eNode = node;
+                }
+            }
+            return eNode;
+        }
+
+        function getPath(eNode) {
+            let queue = [eNode];
+            let path = [];
+            while (queue.length) {
+                let node = queue.shift();
+                if (node.path !== null) {
+                    path.push(node.data);
+                    queue.push(node.path);
+                } else {
+                    path.push(node.data);
+                    queue.length = 0;
+                }
+            }
+            return path.reverse();
+        }
+
+        function getKeyByValue(object, value) {
+            return Object.keys(object).find(key => object[key] === value);
+        }
+
+        function swap(object) {
+            let ret = {};
+            for (let key in object) {
+                ret[object[key]] = key;
+            }
+            return ret;
+        }
+
+        // run
+        console.log(knightMoves([0, 6], [7, 7]));
+
+    </script>
+</body>
+
+</html>
